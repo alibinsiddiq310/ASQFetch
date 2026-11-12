@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="asq_background">#101827</color>
+    <color name="asq_primary">#3478F6</color>
+    <color name="asq_surface">#182334</color>
+    <color name="asq_text">#F5F7FA</color>
+</resources>
