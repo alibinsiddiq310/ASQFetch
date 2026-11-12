@@ -1,4 +1,4 @@
-MainViewModel.ktpackage com.asq.fetch.ui
+package com.asq.fetch.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,7 +20,7 @@ class MainViewModel @Inject constructor(
     private val dao: DownloadDao,
     private val scheduler: DownloadScheduler,
     private val settingsRepo: SettingsRepository,
-    private val socialResolver: SocialMediaResolver // تمت الإضافة هنا
+    private val socialResolver: SocialMediaResolver
 ) : ViewModel() {
 
     val downloads: StateFlow<List<DownloadEntity>> = dao.observeAll()
@@ -32,14 +32,8 @@ class MainViewModel @Inject constructor(
     fun startDownload(url: String) {
         viewModelScope.launch {
             val cleanUrl = url.trim()
-            
-            // هنا نقوم بتحليل الرابط (إنستقرام، تيك توك، الخ)
             val directUrl = socialResolver.resolveUrl(cleanUrl)
-            
-            if (directUrl == null) {
-                // إذا لم نتمكن من استخراج الفيديو (رابط خاطئ أو منصة غير مدعومة)
-                return@launch
-            }
+            if (directUrl == null) return@launch
 
             val fileName = directUrl.substringAfterLast('/').substringBefore('?')
                 .ifBlank { "file_${System.currentTimeMillis()}" }
@@ -48,7 +42,7 @@ class MainViewModel @Inject constructor(
 
             val id = dao.insert(
                 DownloadEntity(
-                    url = directUrl, // نخزن الرابط المباشر
+                    url = directUrl,
                     fileName = fileName,
                     platform = platform,
                     status = "QUEUED"
