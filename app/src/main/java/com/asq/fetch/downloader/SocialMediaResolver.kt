@@ -26,12 +26,10 @@ class SocialMediaResolver @Inject constructor() {
     )
 
     suspend fun resolveUrl(url: String): String? = withContext(Dispatchers.IO) {
-        // إذا كان الرابط مباشراً (صورة أو فيديو عادي) نرجعه كما هو
         if (url.matches(Regex(".*\\.(mp4|jpg|jpeg|png|webp|gif)$", RegexOption.IGNORE_CASE))) {
             return@withContext url
         }
 
-        // محاولة استخراج الرابط المباشر من المنصات المدعومة
         for (skraper in scrapers) {
             try {
                 val post = skraper.getPost(url) ?: continue
