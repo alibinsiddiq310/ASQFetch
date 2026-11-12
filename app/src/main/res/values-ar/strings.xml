@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ASQ Fetch</string>
+    <string name="home_title">الرئيسية</string>
+    <string name="downloads">التنزيلات</string>
+    <string name="settings">الإعدادات</string>
+    <string name="about">حول التطبيق</string>
+    <string name="url_hint">الصق رابط الميديا هنا…</string>
+    <string name="paste">لصق</string>
+    <string name="download">تنزيل</string>
+    <string name="recent">أحدث التنزيلات</string>
+    <string name="no_downloads">لا توجد تنزيلات بعد</string>
+    <string name="language">اللغة</string>
+    <string name="theme">المظهر</string>
+    <string name="light">فاتح</string>
+    <string name="dark">داكن</string>
+    <string name="system">النظام</string>
+    <string name="notifications">الإشعارات</string>
+    <string name="developer">المطوّر</string>
+    <string name="developed_by">Developed by ASQ</string>
+    <string name="open">فتح</string>
+    <string name="share">مشاركة</string>
+    <string name="delete">حذف</string>
+    <string name="cancel">إلغاء</string>
+</resources>
