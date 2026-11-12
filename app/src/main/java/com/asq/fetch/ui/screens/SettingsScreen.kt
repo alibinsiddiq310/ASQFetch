@@ -1,3 +1,4 @@
+import androidx.compose.runtime.getValue
 package com.asq.fetch.ui.screens
 
 import android.app.Activity
