@@ -1,4 +1,4 @@
-package com.asq.fetch.ui
+MainViewModel.ktpackage com.asq.fetch.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,6 +7,7 @@ import com.asq.fetch.data.local.DownloadEntity
 import com.asq.fetch.data.prefs.AppSettings
 import com.asq.fetch.data.prefs.SettingsRepository
 import com.asq.fetch.downloader.DownloadScheduler
+import com.asq.fetch.downloader.SocialMediaResolver
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +19,8 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val dao: DownloadDao,
     private val scheduler: DownloadScheduler,
-    private val settingsRepo: SettingsRepository
+    private val settingsRepo: SettingsRepository,
+    private val socialResolver: SocialMediaResolver // تمت الإضافة هنا
 ) : ViewModel() {
 
     val downloads: StateFlow<List<DownloadEntity>> = dao.observeAll()
@@ -30,13 +32,23 @@ class MainViewModel @Inject constructor(
     fun startDownload(url: String) {
         viewModelScope.launch {
             val cleanUrl = url.trim()
-            val fileName = cleanUrl.substringAfterLast('/')
-                .substringBefore('?')
+            
+            // هنا نقوم بتحليل الرابط (إنستقرام، تيك توك، الخ)
+            val directUrl = socialResolver.resolveUrl(cleanUrl)
+            
+            if (directUrl == null) {
+                // إذا لم نتمكن من استخراج الفيديو (رابط خاطئ أو منصة غير مدعومة)
+                return@launch
+            }
+
+            val fileName = directUrl.substringAfterLast('/').substringBefore('?')
                 .ifBlank { "file_${System.currentTimeMillis()}" }
+            
             val platform = detectPlatform(cleanUrl)
+
             val id = dao.insert(
                 DownloadEntity(
-                    url = cleanUrl,
+                    url = directUrl, // نخزن الرابط المباشر
                     fileName = fileName,
                     platform = platform,
                     status = "QUEUED"
