@@ -61,4 +61,7 @@ dependencies {
     implementation("androidx.work:work-runtime-ktx:2.9.1")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+    
+    // مكتبة سحب الفيديوهات والصور من المنصات
+    implementation("ru.sokomishalov.skraper:skraper-core:0.7.0")
 }
