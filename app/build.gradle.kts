@@ -62,5 +62,6 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
     
-    implementation("ru.sokomishalov.skraper:skraper-core:0.7.0")
+    // المكتبة الصحيحة التي تم تعديلها
+    implementation("ru.sokomishalov.skraper:skrapers:0.14.0")
 }
