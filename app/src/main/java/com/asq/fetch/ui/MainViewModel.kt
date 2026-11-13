@@ -32,8 +32,14 @@ class MainViewModel @Inject constructor(
     fun startDownload(url: String) {
         viewModelScope.launch {
             val cleanUrl = url.trim()
+            
+            // تحليل الرابط
             val directUrl = socialResolver.resolveUrl(cleanUrl)
-            if (directUrl == null) return@launch
+            
+            if (directUrl == null) {
+                // فشل التحليل (منصة غير مدعومة أو رابط خاطئ)
+                return@launch
+            }
 
             val fileName = directUrl.substringAfterLast('/').substringBefore('?')
                 .ifBlank { "file_${System.currentTimeMillis()}" }
