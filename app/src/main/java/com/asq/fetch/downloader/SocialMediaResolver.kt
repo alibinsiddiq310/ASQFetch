@@ -1,10 +1,10 @@
-
 package com.asq.fetch.downloader
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import java.net.URLEncoder
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -16,31 +16,30 @@ class SocialMediaResolver @Inject constructor() {
         .followSslRedirects(true)
         .build()
 
+    // رابط السيرفر الخاص بك
+    private val backendBaseUrl = "https://asq-fetch-backend.onrender.com"
+
     suspend fun resolveUrl(url: String): String? = withContext(Dispatchers.IO) {
-        // إذا كان الرابط مباشراً (صورة أو فيديو عادي) نرجعه كما هو
-        if (url.matches(Regex(".*\\.(mp4|jpg|jpeg|png|webp|gif|mp3)$", RegexOption.IGNORE_CASE))) {
-            return@withContext url
+        val cleanUrl = url.trim()
+
+        // إذا كان الرابط مباشراً، لا داعي لإرساله للسيرفر
+        if (cleanUrl.matches(Regex(".*\\.(mp4|jpg|jpeg|png|webp|gif|mp3)$", RegexOption.IGNORE_CASE))) {
+            return@withContext cleanUrl
         }
 
         try {
-            // نستخدم متصفح وهمي لخداع المنصة وإرجاع الصفحة
+            val encodedUrl = URLEncoder.encode(cleanUrl, "UTF-8")
+            val apiUrl = "$backendBaseUrl/download?url=$encodedUrl&format=best"
+
             val request = Request.Builder()
-                .url(url)
-                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+                .url(apiUrl)
                 .build()
 
+            // نتحقق فقط إذا كان السيرفر يستجيب
             val response = client.newCall(request).execute()
-            val html = response.body?.string() ?: return@withContext null
-
-            // البحث عن رابط الفيديو (og:video) أو الصورة (og:image)
-            val videoRegex = Regex("<meta[^>]+property=[\"']og:video[\"'][^>]+content=[\"'](.*?)[\"']")
-            val imageRegex = Regex("<meta[^>]+property=[\"']og:image[\"'][^>]+content=[\"'](.*?)[\"']")
-
-            val videoUrl = videoRegex.find(html)?.groupValues?.get(1)
-            val imageUrl = imageRegex.find(html)?.groupValues?.get(1)
-
-            // نرجع الفيديو إذا وجدناه، وإلا نرجع الصورة
-            return@withContext videoUrl ?: imageUrl
+            
+            // نرجع الرابط ليقوم محرك التنزيل بتحميله
+            return@withContext if (response.isSuccessful) apiUrl else null
         } catch (e: Exception) {
             return@withContext null
         }
